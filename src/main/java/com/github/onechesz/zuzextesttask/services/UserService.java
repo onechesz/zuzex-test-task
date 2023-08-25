@@ -41,4 +41,8 @@ public class UserService {
             userRepository.save(userModel);
         });
     }
+
+    public void delete(@NotNull UserDetails userDetails) {
+        userRepository.findById(userDetails.getUserModel().getId()).ifPresent(userRepository::delete);
+    }
 }

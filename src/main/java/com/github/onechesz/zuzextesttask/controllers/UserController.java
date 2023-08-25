@@ -78,4 +78,13 @@ public class UserController {
     private @NotNull ResponseEntity<ExceptionResponse> userNotUpdatedExceptionHandler(@NotNull UserNotUpdatedException userNotUpdatedException) {
         return new ResponseEntity<>(new ExceptionResponse(userNotUpdatedException.getMessage(), System.currentTimeMillis()), HttpStatus.BAD_REQUEST);
     }
+
+    @DeleteMapping(path = "")
+    public ResponseEntity<HttpStatus> performDeleting(HttpServletRequest httpServletRequest) {
+        authenticationCheck(httpServletRequest);
+
+        userService.delete((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+        return ResponseEntity.ok(HttpStatus.ACCEPTED);
+    }
 }
