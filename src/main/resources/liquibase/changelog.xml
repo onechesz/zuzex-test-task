@@ -1,0 +1,53 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="V1__CreateUserTable" author="onechesz">
+        <createTable tableName="user">
+            <column name="id" type="INT" autoIncrement="true" generationType="BY DEFAULT">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="name" type="VARCHAR(32)">
+                <constraints unique="true" nullable="false" />
+            </column>
+            <column name="password" type="VARCHAR(60)">
+                <constraints nullable="false" />
+            </column>
+            <column name="age" type="INT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="house">
+            <column name="id" type="INT" autoIncrement="true" generationType="BY DEFAULT">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false" />
+            </column>
+            <column name="owner_id" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="house" baseColumnNames="owner_id" constraintName="fk_house_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id" />
+
+        <createTable tableName="tenant">
+            <column name="user_id" type="INT">
+                <constraints nullable="false" />
+            </column>
+            <column name="house_id" type="INT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="tenant" baseColumnNames="user_id" constraintName="fk_tenant_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="tenant" baseColumnNames="house_id" constraintName="fk_tenant_house"
+                                 referencedTableName="house"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+</databaseChangeLog>
