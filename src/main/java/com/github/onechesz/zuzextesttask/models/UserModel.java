@@ -16,11 +16,17 @@ public class UserModel {
     @Column(name = "password", nullable = false)
     private char[] password;
 
-    @Column(name = "age")
-    private int age;
+    @Column(name = "age", nullable = false)
+    private Integer age;
 
     public UserModel() {
 
+    }
+
+    public UserModel(String name, char[] password, Integer age) {
+        this.name = name;
+        this.password = password;
+        this.age = age;
     }
 
     public int getId() {
@@ -47,11 +53,11 @@ public class UserModel {
         this.password = password;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 }
