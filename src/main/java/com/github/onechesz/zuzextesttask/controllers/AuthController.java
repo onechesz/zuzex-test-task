@@ -1,13 +1,16 @@
 package com.github.onechesz.zuzextesttask.controllers;
 
 import com.github.onechesz.zuzextesttask.dtos.AuthenticationDTO;
-import com.github.onechesz.zuzextesttask.dtos.UserDTO;
+import com.github.onechesz.zuzextesttask.dtos.user.UserDTIO;
+import com.github.onechesz.zuzextesttask.security.UserDetails;
 import com.github.onechesz.zuzextesttask.services.UserService;
 import com.github.onechesz.zuzextesttask.utils.JWTUtil;
 import com.github.onechesz.zuzextesttask.utils.exceptions.ExceptionResponse;
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotAuthenticatedException;
+import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotAuthorizedException;
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotRegisteredException;
 import com.github.onechesz.zuzextesttask.validators.UserDTOValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -37,17 +41,29 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
+    public static void authenticationCheck(@NotNull HttpServletRequest httpServletRequest) {
+        UserNotAuthenticatedException userNotAuthenticatedException = (UserNotAuthenticatedException) httpServletRequest.getAttribute("exception");
+
+        if (userNotAuthenticatedException != null)
+            throw userNotAuthenticatedException;
+    }
+
+    public static void adminAuthorizationCheck(@NotNull UserDetails userDetails) {
+        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            throw new UserNotAuthorizedException("у вас нет прав администратора");
+    }
+
     @PostMapping(path = "/register")
-    public Map<String, String> performRegistration(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
+    public Map<String, String> performRegistration(@RequestBody @Valid UserDTIO userDTIO, BindingResult bindingResult) {
         checkForRegisterExceptionsAndThrow(bindingResult);
 
-        userDTOValidator.validate(userDTO, bindingResult);
+        userDTOValidator.validate(userDTIO, bindingResult);
 
         checkForRegisterExceptionsAndThrow(bindingResult);
 
-        userService.register(userDTO);
+        userService.register(userDTIO);
 
-        return Map.of("JWT", jwtUtil.generateToken(userDTO.getName()));
+        return Map.of("JWT", jwtUtil.generateToken(userDTIO.getName()));
     }
 
     private void checkForRegisterExceptionsAndThrow(@NotNull BindingResult bindingResult) {

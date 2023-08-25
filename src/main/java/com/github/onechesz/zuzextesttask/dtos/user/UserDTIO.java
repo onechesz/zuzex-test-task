@@ -1,13 +1,12 @@
-package com.github.onechesz.zuzextesttask.dtos;
+package com.github.onechesz.zuzextesttask.dtos.user;
 
 import com.github.onechesz.zuzextesttask.models.UserModel;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import org.jetbrains.annotations.Contract;
 
-public class UserDTO {
+public class UserDTIO {
     @NotNull(message = "не должно отсутствовать")
     @Size(min = 4, max = 32, message = "должно быть длиной от 4-х до 32-х символов")
     private String name;
@@ -21,13 +20,12 @@ public class UserDTO {
     @Max(value = 120, message = "не должен превышать 120")
     private Integer age;
 
-    public UserDTO() {
+    public UserDTIO() {
 
     }
 
-    @Contract("_ -> new")
-    public static @org.jetbrains.annotations.NotNull UserModel convertToUserModel(@org.jetbrains.annotations.NotNull UserDTO userDTO) {
-        return new UserModel(userDTO.name, userDTO.password.toCharArray(), userDTO.age);
+    public static @org.jetbrains.annotations.NotNull UserModel convertToUserModel(@org.jetbrains.annotations.NotNull UserDTIO userDTIO, String role) {
+        return new UserModel(userDTIO.name, userDTIO.password.toCharArray(), role, userDTIO.age);
     }
 
     public String getName() {

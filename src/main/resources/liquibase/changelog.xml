@@ -50,4 +50,12 @@
                                  referencedColumnNames="id" />
     </changeSet>
 
+    <changeSet id="V2__AlterTableUserAddColumnRole" author="onechesz">
+        <addColumn tableName="user">
+            <column name="role" type="VARCHAR(10)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

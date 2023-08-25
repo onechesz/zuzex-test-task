@@ -1,6 +1,6 @@
 package com.github.onechesz.zuzextesttask.validators;
 
-import com.github.onechesz.zuzextesttask.dtos.UserDTO;
+import com.github.onechesz.zuzextesttask.dtos.user.UserDTIO;
 import com.github.onechesz.zuzextesttask.models.UserModel;
 import com.github.onechesz.zuzextesttask.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
@@ -20,12 +20,12 @@ public class UserDTOValidator implements Validator {
 
     @Override
     public boolean supports(@NotNull Class<?> clazz) {
-        return UserDTO.class.equals(clazz);
+        return UserDTIO.class.equals(clazz);
     }
 
     @Override
     public void validate(@NotNull Object target, @NotNull Errors errors) {
-        Optional<UserModel> userModelOptional = userRepository.findByName(((UserDTO) target).getName());
+        Optional<UserModel> userModelOptional = userRepository.findByName(((UserDTIO) target).getName());
 
         if (userModelOptional.isPresent())
             errors.rejectValue("name", "", "пользователь с таким именем уже зарегистрирован");
