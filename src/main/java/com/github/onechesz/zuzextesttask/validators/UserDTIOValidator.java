@@ -11,10 +11,10 @@ import org.springframework.validation.Validator;
 import java.util.Optional;
 
 @Component
-public class UserDTOValidator implements Validator {
+public class UserDTIOValidator implements Validator {
     private final UserRepository userRepository;
 
-    public UserDTOValidator(UserRepository userRepository) {
+    public UserDTIOValidator(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

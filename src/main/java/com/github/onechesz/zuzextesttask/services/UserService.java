@@ -4,6 +4,7 @@ import com.github.onechesz.zuzextesttask.dtos.user.UserDTIO;
 import com.github.onechesz.zuzextesttask.dtos.user.UserDTOO;
 import com.github.onechesz.zuzextesttask.models.UserModel;
 import com.github.onechesz.zuzextesttask.repositories.UserRepository;
+import com.github.onechesz.zuzextesttask.security.UserDetails;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,5 +31,14 @@ public class UserService {
     @Transactional(readOnly = false)
     public List<UserDTOO> getAll() {
         return userRepository.findAll().stream().map(UserModel::convertToUserDTOO).toList();
+    }
+
+    public void update(@NotNull UserDTIO userDTIO, @NotNull UserDetails userDetails) {
+        userRepository.findById(userDetails.getUserModel().getId()).ifPresent(userModel -> {
+            userModel.setName(userDTIO.getName());
+            userModel.setPassword(passwordEncoder.encode(userDTIO.getPassword()).toCharArray());
+            userModel.setAge(userDTIO.getAge());
+            userRepository.save(userModel);
+        });
     }
 }

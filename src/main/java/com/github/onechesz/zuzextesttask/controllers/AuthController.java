@@ -9,7 +9,7 @@ import com.github.onechesz.zuzextesttask.utils.exceptions.ExceptionResponse;
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotAuthenticatedException;
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotAuthorizedException;
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotRegisteredException;
-import com.github.onechesz.zuzextesttask.validators.UserDTOValidator;
+import com.github.onechesz.zuzextesttask.validators.UserDTIOValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.Contract;
@@ -29,13 +29,13 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/api/auth")
 public class AuthController {
-    private final UserDTOValidator userDTOValidator;
+    private final UserDTIOValidator userDTIOValidator;
     private final UserService userService;
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public AuthController(UserDTOValidator userDTOValidator, UserService userService, JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
-        this.userDTOValidator = userDTOValidator;
+    public AuthController(UserDTIOValidator userDTIOValidator, UserService userService, JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
+        this.userDTIOValidator = userDTIOValidator;
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
@@ -55,18 +55,15 @@ public class AuthController {
 
     @PostMapping(path = "/register")
     public Map<String, String> performRegistration(@RequestBody @Valid UserDTIO userDTIO, BindingResult bindingResult) {
-        checkForRegisterExceptionsAndThrow(bindingResult);
-
-        userDTOValidator.validate(userDTIO, bindingResult);
-
-        checkForRegisterExceptionsAndThrow(bindingResult);
-
+        checkForRegistrationExceptionsAndThrow(bindingResult);
+        userDTIOValidator.validate(userDTIO, bindingResult);
+        checkForRegistrationExceptionsAndThrow(bindingResult);
         userService.register(userDTIO);
 
         return Map.of("JWT", jwtUtil.generateToken(userDTIO.getName()));
     }
 
-    private void checkForRegisterExceptionsAndThrow(@NotNull BindingResult bindingResult) {
+    private void checkForRegistrationExceptionsAndThrow(@NotNull BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessagesBuilder = new StringBuilder();
 
@@ -81,7 +78,7 @@ public class AuthController {
 
     @Contract("_ -> new")
     @ExceptionHandler(value = UserNotRegisteredException.class)
-    private @NotNull ResponseEntity<ExceptionResponse> userNotRegisteredHandler(@NotNull UserNotRegisteredException userNotRegisteredException) {
+    private @NotNull ResponseEntity<ExceptionResponse> userNotRegisteredExceptionHandler(@NotNull UserNotRegisteredException userNotRegisteredException) {
         return new ResponseEntity<>(new ExceptionResponse(userNotRegisteredException.getMessage(), System.currentTimeMillis()), HttpStatus.BAD_REQUEST);
     }
 
