@@ -1,14 +1,11 @@
 package com.github.onechesz.zuzextesttask.validators;
 
 import com.github.onechesz.zuzextesttask.dtos.user.UserDTIO;
-import com.github.onechesz.zuzextesttask.models.UserModel;
 import com.github.onechesz.zuzextesttask.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import java.util.Optional;
 
 @Component
 public class UserDTIOValidator implements Validator {

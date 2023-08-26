@@ -23,6 +23,12 @@ public class TenantModel {
 
     }
 
+    public TenantModel(UserHouseId userHouseId, UserModel userModel, HouseModel houseModel) {
+        this.userHouseId = userHouseId;
+        this.userModel = userModel;
+        this.houseModel = houseModel;
+    }
+
     public UserHouseId getUserHouseId() {
         return userHouseId;
     }
