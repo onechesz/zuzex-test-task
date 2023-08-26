@@ -5,10 +5,11 @@ import com.github.onechesz.zuzextesttask.dtos.house.HouseDTOO;
 import com.github.onechesz.zuzextesttask.security.UserDetails;
 import com.github.onechesz.zuzextesttask.services.HouseService;
 import com.github.onechesz.zuzextesttask.utils.exceptions.ExceptionResponse;
-import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotCreatedException;
+import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotProceedException;
 import com.github.onechesz.zuzextesttask.validators.HouseDTIOValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,17 @@ public class HouseController {
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<HttpStatus> performUpdating(HttpServletRequest httpServletRequest, @PathVariable(name = "id") int id, @RequestBody @Valid HouseDTIO houseDTIO, BindingResult bindingResult) {
+        authenticationCheck(httpServletRequest);
+        checkForHouseCreationExceptionsAndThrow(bindingResult);
+        houseDTIOValidator.validate(houseDTIO, bindingResult);
+        checkForHouseCreationExceptionsAndThrow(bindingResult);
+        houseService.update(id, houseDTIO, (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+        return ResponseEntity.ok(HttpStatus.ACCEPTED);
+    }
+
     private void checkForHouseCreationExceptionsAndThrow(@NotNull BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessagesBuilder = new StringBuilder();
@@ -59,12 +71,13 @@ public class HouseController {
 
             errorMessagesBuilder.setLength(errorMessagesBuilder.length() - 2);
 
-            throw new HouseNotCreatedException(errorMessagesBuilder.toString());
+            throw new HouseNotProceedException(errorMessagesBuilder.toString());
         }
     }
 
-    @ExceptionHandler(value = HouseNotCreatedException.class)
-    private ResponseEntity<ExceptionResponse> houseNotCreatedExceptionHandler(HouseNotCreatedException houseNotCreatedException) {
-        return new ResponseEntity<>(new ExceptionResponse(houseNotCreatedException.getMessage(), System.currentTimeMillis()), HttpStatus.NOT_ACCEPTABLE);
+    @Contract("_ -> new")
+    @ExceptionHandler(value = HouseNotProceedException.class)
+    private @NotNull ResponseEntity<ExceptionResponse> houseNotProceedExceptionHandler(@NotNull HouseNotProceedException houseNotProceedException) {
+        return new ResponseEntity<>(new ExceptionResponse(houseNotProceedException.getMessage(), System.currentTimeMillis()), HttpStatus.NOT_ACCEPTABLE);
     }
 }
