@@ -8,6 +8,11 @@ import com.github.onechesz.zuzextesttask.utils.exceptions.ExceptionResponse;
 import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotDeletedException;
 import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotProceedException;
 import com.github.onechesz.zuzextesttask.validators.HouseDTIOValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.Contract;
@@ -25,6 +30,7 @@ import static com.github.onechesz.zuzextesttask.controllers.AuthController.authe
 
 @RestController
 @RequestMapping(path = "/api/houses")
+@Tag(name = "House Controller", description = "Дома")
 public class HouseController {
     private final HouseService houseService;
     private final HouseDTIOValidator houseDTIOValidator;
@@ -34,6 +40,8 @@ public class HouseController {
         this.houseDTIOValidator = houseDTIOValidator;
     }
 
+    @ApiResponse(responseCode = "200", description = "Список всех домов")
+    @Operation(summary = "Запросить список всех своих домов")
     @GetMapping(path = "")
     @ResponseBody
     public List<HouseDTOO> viewAllSelf(HttpServletRequest httpServletRequest) {
@@ -43,7 +51,9 @@ public class HouseController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity<HttpStatus> performCreation(HttpServletRequest httpServletRequest, @RequestBody @Valid HouseDTIO houseDTIO, BindingResult bindingResult) {
+    @Operation(summary = "Создать новый дом")
+    @ApiResponse(responseCode = "201", description = "Статус создания нового дома")
+    public ResponseEntity<HttpStatus> performCreation(HttpServletRequest httpServletRequest, @RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Данные о доме", required = true, content = @Content(schema = @Schema(implementation = HouseDTIO.class))) HouseDTIO houseDTIO, BindingResult bindingResult) {
         checkForHouseCreationExceptionsAndThrow(bindingResult);
         houseDTIOValidator.validate(houseDTIO, bindingResult);
         checkForHouseCreationExceptionsAndThrow(bindingResult);
@@ -52,6 +62,8 @@ public class HouseController {
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Обновить данные существующего дома")
+    @ApiResponse(responseCode = "201", description = "Статус создания нового дома")
     @PatchMapping(path = "/{id}")
     public ResponseEntity<HttpStatus> performUpdating(HttpServletRequest httpServletRequest, @PathVariable(name = "id") int id, @RequestBody @Valid HouseDTIO houseDTIO, BindingResult bindingResult) {
         authenticationCheck(httpServletRequest);
@@ -83,6 +95,8 @@ public class HouseController {
     }
 
     @DeleteMapping(path = "/{id}")
+    @ApiResponse(responseCode = "202", description = "Статус удаления дома")
+    @Operation(summary = "Удаляет дом по идентификатору")
     public ResponseEntity<HttpStatus> performDeletion(HttpServletRequest httpServletRequest, @PathVariable(name = "id") int id) {
         authenticationCheck(httpServletRequest);
         houseService.delete(id, (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());

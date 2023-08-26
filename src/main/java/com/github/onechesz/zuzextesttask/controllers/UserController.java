@@ -7,6 +7,11 @@ import com.github.onechesz.zuzextesttask.services.UserService;
 import com.github.onechesz.zuzextesttask.utils.exceptions.ExceptionResponse;
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotUpdatedException;
 import com.github.onechesz.zuzextesttask.validators.UserDTIOValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.Contract;
@@ -25,6 +30,7 @@ import static com.github.onechesz.zuzextesttask.controllers.AuthController.authe
 
 @RestController
 @RequestMapping(path = "/api/users")
+@Tag(name = "User Controller", description = "Пользователи")
 public class UserController {
     private final UserService userService;
     private final UserDTIOValidator userDTIOValidator;
@@ -36,6 +42,8 @@ public class UserController {
 
     @GetMapping(path = "")
     @ResponseBody
+    @Operation(summary = "Запросить список всех пользователей (только для администратора)")
+    @ApiResponse(responseCode = "200", description = "Список всех пользователей")
     public List<UserDTOO> viewAll(HttpServletRequest httpServletRequest) {
         authenticationCheck(httpServletRequest);
         adminAuthorizationCheck((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
@@ -44,7 +52,9 @@ public class UserController {
     }
 
     @PatchMapping(path = "")
-    public ResponseEntity<HttpStatus> performUpdating(HttpServletRequest httpServletRequest, @RequestBody @Valid @NotNull UserDTIO userDTIO, BindingResult bindingResult) {
+    @Operation(summary = "Обновить данные о своём аккаунте")
+    @ApiResponse(responseCode = "202", description = "Статус обновления данных")
+    public ResponseEntity<HttpStatus> performUpdating(HttpServletRequest httpServletRequest, @RequestBody @Valid @NotNull @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Данные о пользователе", required = true, content = @Content(schema = @Schema(implementation = UserDTIO.class))) UserDTIO userDTIO, BindingResult bindingResult) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         authenticationCheck(httpServletRequest);
@@ -80,6 +90,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "")
+    @Operation(summary = "Удалить свой аккаунт")
+    @ApiResponse(responseCode = "202", description = "Статус удаления аккаунта")
     public ResponseEntity<HttpStatus> performDeleting(HttpServletRequest httpServletRequest) {
         authenticationCheck(httpServletRequest);
 

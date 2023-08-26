@@ -4,6 +4,9 @@ import com.github.onechesz.zuzextesttask.security.UserDetails;
 import com.github.onechesz.zuzextesttask.services.TenantService;
 import com.github.onechesz.zuzextesttask.utils.exceptions.ExceptionResponse;
 import com.github.onechesz.zuzextesttask.utils.exceptions.TenantNotAddedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +19,7 @@ import static com.github.onechesz.zuzextesttask.controllers.AuthController.authe
 
 @RestController
 @RequestMapping(path = "/api/houses/{houseId}/tenants")
+@Tag(name = "Tenant Controller", description = "Жильцы")
 public class TenantController {
     private final TenantService tenantService;
 
@@ -24,6 +28,8 @@ public class TenantController {
     }
 
     @PostMapping(path = "/{id}")
+    @Operation(summary = "Добавить жильца в дом")
+    @ApiResponse(responseCode = "202", description = "Статус добавления жильца в дом")
     public ResponseEntity<HttpStatus> performAddingToHouse(HttpServletRequest httpServletRequest, @PathVariable(name = "houseId") int houseId, @PathVariable(name = "id") int id) {
         authenticationCheck(httpServletRequest);
         tenantService.addToHouse(id, houseId, (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());

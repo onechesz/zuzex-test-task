@@ -10,6 +10,11 @@ import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotAuthenticatedEx
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotAuthorizedException;
 import com.github.onechesz.zuzextesttask.utils.exceptions.UserNotRegisteredException;
 import com.github.onechesz.zuzextesttask.validators.UserDTIOValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.Contract;
@@ -28,6 +33,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/auth")
+@Tag(name = "Auth Controller", description = "Регистрация и вход")
 public class AuthController {
     private final UserDTIOValidator userDTIOValidator;
     private final UserService userService;
@@ -54,7 +60,9 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register")
-    public Map<String, String> performRegistration(@RequestBody @Valid UserDTIO userDTIO, BindingResult bindingResult) {
+    @Operation(summary = "Зарегистрировать нового пользователя")
+    @ApiResponse(responseCode = "200", description = "JWT")
+    public Map<String, String> performRegistration(@RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Данные о пользователе", required = true, content = @Content(schema = @Schema(implementation = UserDTIO.class))) UserDTIO userDTIO, BindingResult bindingResult) {
         checkForRegistrationExceptionsAndThrow(bindingResult);
         userDTIOValidator.validate(userDTIO, bindingResult);
         checkForRegistrationExceptionsAndThrow(bindingResult);
@@ -83,7 +91,9 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login")
-    public Map<String, String> performLogin(@RequestBody @Valid @NotNull AuthenticationDTO authenticationDTO) {
+    @Operation(summary = "Войти в качестве пользователя")
+    @ApiResponse(responseCode = "200", description = "JWT")
+    public Map<String, String> performLogin(@RequestBody @Valid @NotNull @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Входные данные пользователя", required = true, content = @Content(schema = @Schema(implementation = AuthenticationDTO.class))) AuthenticationDTO authenticationDTO) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationDTO.getName(), authenticationDTO.getPassword()));
         } catch (BadCredentialsException badCredentialsException) {
