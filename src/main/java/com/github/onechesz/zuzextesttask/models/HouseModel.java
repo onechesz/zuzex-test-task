@@ -15,15 +15,20 @@ public class HouseModel {
     @Column(name = "address", unique = true, nullable = false)
     private String address;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private UserModel ownerModel;
 
-    @OneToMany(mappedBy = "houseModel")
+    @OneToMany(mappedBy = "houseModel", cascade = CascadeType.ALL)
     private List<TenantModel> tenantModelList;
 
     public HouseModel() {
 
+    }
+
+    public HouseModel(String address, UserModel ownerModel) {
+        this.address = address;
+        this.ownerModel = ownerModel;
     }
 
     public int getId() {

@@ -27,10 +27,10 @@ public class UserModel {
     @Column(name = "age", nullable = false)
     private Integer age;
 
-    @OneToOne(mappedBy = "ownerModel")
+    @OneToOne(mappedBy = "ownerModel", cascade = CascadeType.ALL)
     private HouseModel ownedHouseModel;
 
-    @OneToMany(mappedBy = "userModel")
+    @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
     private List<TenantModel> tenantModelList;
 
     public UserModel() {

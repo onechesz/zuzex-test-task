@@ -1,7 +1,9 @@
 package com.github.onechesz.zuzextesttask.services;
 
+import com.github.onechesz.zuzextesttask.dtos.house.HouseDTIO;
 import com.github.onechesz.zuzextesttask.dtos.house.HouseDTOO;
 import com.github.onechesz.zuzextesttask.dtos.tenant.TenantDTOO;
+import com.github.onechesz.zuzextesttask.models.HouseModel;
 import com.github.onechesz.zuzextesttask.models.TenantModel;
 import com.github.onechesz.zuzextesttask.models.UserModel;
 import com.github.onechesz.zuzextesttask.repositories.HouseRepository;
@@ -35,5 +37,9 @@ public class HouseService {
 
             return new HouseDTOO(houseModel.getId(), tenantDTOOList);
         }).toList();
+    }
+
+    public void create(HouseDTIO houseDTIO, @NotNull UserDetails userDetails) {
+        houseRepository.save(HouseDTIO.convertToHouseModel(houseDTIO, userDetails.getUserModel()));
     }
 }

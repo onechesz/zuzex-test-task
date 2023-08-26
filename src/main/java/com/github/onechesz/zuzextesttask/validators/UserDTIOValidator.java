@@ -25,9 +25,7 @@ public class UserDTIOValidator implements Validator {
 
     @Override
     public void validate(@NotNull Object target, @NotNull Errors errors) {
-        Optional<UserModel> userModelOptional = userRepository.findByName(((UserDTIO) target).getName());
-
-        if (userModelOptional.isPresent())
+        if (userRepository.findByName(((UserDTIO) target).getName()).isPresent())
             errors.rejectValue("name", "", "пользователь с таким именем уже зарегистрирован");
     }
 }

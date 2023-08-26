@@ -7,15 +7,15 @@ import java.util.List;
 public class HouseDTOO {
     private int id;
 
-    private List<TenantDTOO> tenantDTOOList;
+    private List<TenantDTOO> tenants;
 
     public HouseDTOO() {
 
     }
 
-    public HouseDTOO(int id, List<TenantDTOO> tenantDTOOList) {
+    public HouseDTOO(int id, List<TenantDTOO> tenants) {
         this.id = id;
-        this.tenantDTOOList = tenantDTOOList;
+        this.tenants = tenants;
     }
 
     public int getId() {
@@ -26,11 +26,11 @@ public class HouseDTOO {
         this.id = id;
     }
 
-    public List<TenantDTOO> getTenantDTOOList() {
-        return tenantDTOOList;
+    public List<TenantDTOO> getTenants() {
+        return tenants;
     }
 
-    public void setTenantDTOOList(List<TenantDTOO> tenantDTOOList) {
-        this.tenantDTOOList = tenantDTOOList;
+    public void setTenants(List<TenantDTOO> tenants) {
+        this.tenants = tenants;
     }
 }
