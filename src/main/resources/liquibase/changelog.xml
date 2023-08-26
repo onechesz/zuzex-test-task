@@ -58,4 +58,8 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="V3__AddNotNullToHouseOwner" author="onechesz">
+        <dropNotNullConstraint tableName="house" columnName="user_id" />
+    </changeSet>
+
 </databaseChangeLog>

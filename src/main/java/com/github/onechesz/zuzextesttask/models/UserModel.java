@@ -5,10 +5,12 @@ import jakarta.persistence.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 @Entity
 @Table(name = "\"user\"")
 public class UserModel {
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", unique = true, nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -24,6 +26,12 @@ public class UserModel {
 
     @Column(name = "age", nullable = false)
     private Integer age;
+
+    @OneToOne(mappedBy = "ownerModel")
+    private HouseModel ownedHouseModel;
+
+    @OneToMany(mappedBy = "userModel")
+    private List<TenantModel> tenantModelList;
 
     public UserModel() {
 
@@ -79,5 +87,21 @@ public class UserModel {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public HouseModel getOwnedHouseModel() {
+        return ownedHouseModel;
+    }
+
+    public void setOwnedHouseModel(HouseModel ownedHouseModel) {
+        this.ownedHouseModel = ownedHouseModel;
+    }
+
+    public List<TenantModel> getTenantModelList() {
+        return tenantModelList;
+    }
+
+    public void setTenantModelList(List<TenantModel> tenantModelList) {
+        this.tenantModelList = tenantModelList;
     }
 }
