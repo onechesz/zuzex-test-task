@@ -5,6 +5,7 @@ import com.github.onechesz.zuzextesttask.dtos.house.HouseDTOO;
 import com.github.onechesz.zuzextesttask.security.UserDetails;
 import com.github.onechesz.zuzextesttask.services.HouseService;
 import com.github.onechesz.zuzextesttask.utils.exceptions.ExceptionResponse;
+import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotDeletedException;
 import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotProceedException;
 import com.github.onechesz.zuzextesttask.validators.HouseDTIOValidator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -79,5 +80,19 @@ public class HouseController {
     @ExceptionHandler(value = HouseNotProceedException.class)
     private @NotNull ResponseEntity<ExceptionResponse> houseNotProceedExceptionHandler(@NotNull HouseNotProceedException houseNotProceedException) {
         return new ResponseEntity<>(new ExceptionResponse(houseNotProceedException.getMessage(), System.currentTimeMillis()), HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<HttpStatus> performDeletion(HttpServletRequest httpServletRequest, @PathVariable(name = "id") int id) {
+        authenticationCheck(httpServletRequest);
+        houseService.delete(id, (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+        return ResponseEntity.ok(HttpStatus.ACCEPTED);
+    }
+
+    @Contract("_ -> new")
+    @ExceptionHandler(value = HouseNotDeletedException.class)
+    private @NotNull ResponseEntity<ExceptionResponse> houseNotDeletedExceptionHandler(@NotNull HouseNotDeletedException houseNotDeletedException) {
+        return new ResponseEntity<>(new ExceptionResponse(houseNotDeletedException.getMessage(), System.currentTimeMillis()), HttpStatus.NOT_ACCEPTABLE);
     }
 }

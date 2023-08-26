@@ -19,7 +19,7 @@ public class HouseModel {
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private UserModel ownerModel;
 
-    @OneToMany(mappedBy = "houseModel", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "houseModel")
     private List<TenantModel> tenantModelList;
 
     public HouseModel() {

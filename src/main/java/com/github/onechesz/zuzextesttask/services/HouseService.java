@@ -8,8 +8,10 @@ import com.github.onechesz.zuzextesttask.models.TenantModel;
 import com.github.onechesz.zuzextesttask.models.UserModel;
 import com.github.onechesz.zuzextesttask.repositories.HouseRepository;
 import com.github.onechesz.zuzextesttask.security.UserDetails;
+import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotDeletedException;
 import com.github.onechesz.zuzextesttask.utils.exceptions.HouseNotProceedException;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +49,25 @@ public class HouseService {
 
     public void update(int id, HouseDTIO houseDTIO, UserDetails userDetails) {
         houseRepository.findById(id).ifPresentOrElse(houseModel -> {
-            if (houseModel.getOwnerModel().getId() == userDetails.getUserModel().getId())
+            if (houseModel.getOwnerModel().getId() == userDetails.getUserModel().getId()){
                 houseModel.setAddress(houseDTIO.getAddress());
+                houseRepository.save(houseModel);
+            }
             else
                 throw new HouseNotProceedException("вы не являетесь владельцем данного дома");
         }, () -> {
             throw new HouseNotProceedException("дома с таким идентификатором не существует");
+        });
+    }
+
+    public void delete(int id, UserDetails userDetails) {
+        houseRepository.findById(id).ifPresentOrElse(houseModel -> {
+            if (houseModel.getOwnerModel().getId() == userDetails.getUserModel().getId())
+                houseRepository.delete(houseModel);
+            else
+                throw new HouseNotDeletedException("вы не являетесь владельцем данного дома");
+        }, () -> {
+            throw new HouseNotDeletedException("дома с таким идентификатором не существует");
         });
     }
 }
